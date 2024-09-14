@@ -1,0 +1,17 @@
+
+
+a280: Costo del percorso approssimato TSP: 2913, Rapporto di approssimazione: 1.1295075610701821, Errore: 0.11465842773772743,Is Euclidean: False
+ali535: Costo del percorso approssimato TSP: 229052, Rapporto di approssimazione: 1.132021014238481, Errore: 0.11662417267694672,Is Euclidean: True
+att48: Costo del percorso approssimato TSP: 12613, Rapporto di approssimazione: 1.1867707941287167, Errore: 0.15737730912550543,Is Euclidean: True
+att532: Costo del percorso approssimato TSP: 31061, Rapporto di approssimazione: 1.1219027667413133, Errore: 0.10865715849457519,Is Euclidean: True
+
+bayg29: Costo del percorso approssimato TSP: 1765, Rapporto di approssimazione: 1.0962732919254659, Errore: 0.08781869688385269,Is Euclidean: True
+
+bays29: Costo del percorso approssimato TSP: 2123, Rapporto di approssimazione: 1.050990099009901, Errore: 0.04851625058878945,Is Euclidean: False
+
+berlin52: Costo del percorso approssimato TSP: 8591, Rapporto di approssimazione: 1.1390877751259614, Errore: 0.12210452799441275,Is Euclidean: False
+
+bier127: Costo del percorso approssimato TSP: 132448, Rapporto di approssimazione: 1.119764630290323, Errore: 0.10695518241121044,Is Euclidean: False
+
+brazil58: Costo del percorso approssimato TSP: 27205, Rapporto di approssimazione: 1.0712738728096083, Errore: 0.06653188752067635,Is Euclidean: False
+
