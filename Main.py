@@ -123,7 +123,7 @@ def report(file, tsp_value, approx, err,bool):
         file.write(f"{chiave_da_cercare}: Costo del percorso approssimato TSP: {tsp_value}, Rapporto di approssimazione: {approx}, Errore: {err},Is Euclidean: {bool}\n")
 
 
-tsp_file = '/home/simo/PycharmProjects/Christofides/TSP/brd14051.tsp'
+tsp_file = 'TSP/brd14051.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 tsp_path = christofides_tsp(graph)
@@ -132,7 +132,7 @@ chiave_da_cercare = 'brd14051'
 print("Il percorso approssimato TSP è:")
 print(tsp_path)
 print(f"Il costo del percorso approssimato TSP è: {tsp_cost}")
-filepath = '/home/simo/PycharmProjects/Christofides/SolutionsTSP'
+filepath = 'SolutionsTSP'
 dizionario = parse_file(filepath)
 
 
