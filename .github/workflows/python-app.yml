@@ -3,8 +3,8 @@ name: Run TSP Solver
 on:
   push:
     branches:
-      - main
-workflow_dispatch:
+      - master
+
 jobs: 
   tsp:
     runs-on: ubuntu-latest
