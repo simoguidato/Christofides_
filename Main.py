@@ -1,24 +1,11 @@
 import tsplib95
 import networkx as nx
-import time 
+import time
 from networkx.algorithms import matching
 from itertools import combinations
- 
-import tsplib95
-import networkx as nx
-import time   
-from networkx.algorithms import matching
-from itertools import combinations
-import signal
+import multiprocessing
 
 start_time = time.process_time()
-
-
-class TimeoutException(Exception): pass
-
-
-def timeout_handler(signum, frame):
-    raise TimeoutException()
 
 
 def load_tsp_problem(filename):
@@ -32,22 +19,9 @@ def christofides_tsp(input_graph):
     # Step 2: Trovare i vertici con grado dispari nel MST
     odd_degree_nodes = [v for v, degree in mst.degree() if degree % 2 == 1]
 
-    # Step 3: Matching perfetto a costo minimo con timeout
+    # Step 3: Matching perfetto a costo minimo
     subgraph = input_graph.subgraph(odd_degree_nodes)
-
-    # Imposta il timeout a 120 secondi per il matching
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(120)
-
-    try:
-        # Matching perfetto con costo minimo
-        matching_edges = matching.min_weight_matching(subgraph, maxcardinality=True)
-    except TimeoutException:
-        print("Matching timeout - restituisco il matching parziale.")
-        # Matching alternativo (greedy) nel caso di timeout
-        matching_edges = nx.max_weight_matching(subgraph, maxcardinality=False)
-    finally:
-        signal.alarm(0)  # Disattiva l'allarme dopo il matching
+    matching_edges = matching.min_weight_matching(subgraph, maxcardinality=True)
 
     # Step 4: Creare un multigrafo aggiungendo gli spigoli del matching al MST
     multigraph = nx.MultiGraph(mst)
@@ -84,6 +58,21 @@ def create_graph(tsp_problem):
     for u, v in combinations(nodes, 2):
         new_graph.add_edge(u, v, weight=problem.get_weight(u, v))
     return new_graph
+
+
+def solve_tsp_with_timeout(graph, timeout_sec):
+    pool = multiprocessing.Pool(1)  # Crea un singolo processo nel pool
+    async_result = pool.apply_async(christofides_tsp, (graph,))
+
+    try:
+        tsp_path = async_result.get(timeout=timeout_sec)  # Attendi il risultato con un timeout
+    except multiprocessing.TimeoutError:
+        print(f"Timeout di {timeout_sec} secondi raggiunto. Restituisco un percorso parziale.")
+        tsp_path = []  # Restituisci un percorso vuoto o parziale se il timeout viene raggiunto
+    finally:
+        pool.terminate()  # Termina il processo nel pool
+
+    return tsp_path
 
 
 def parse_file(filename):
@@ -132,7 +121,7 @@ def cerca_valore(list, chiave):
             else:
                 print(f"Il problema TSP rispetta il rapporto di approssimazione, {tsp_cost / list[chiave]}.")
         error = (tsp_cost - list[chiave]) / tsp_cost
-        report('Report', tsp_cost, tsp_cost / list[chiave], error,
+        report('/home/simo/PycharmProjects/Christofides/Report', tsp_cost, tsp_cost / list[chiave], error,
                is_euclidean_tsp(problem))
         print(f"Errore: {error}")
     else:
@@ -155,16 +144,8 @@ tsp_file = 'TSP/pla7397.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
-# Imposta timeout globale di 20 minuti
-signal.alarm(1200)
-
-try:
-    tsp_path = christofides_tsp(graph)
-except TimeoutException:
-    print("Timeout globale - restituisco il percorso parziale.")
-    tsp_path = []
-finally:
-    signal.alarm(0)
+# Risolvi con un timeout di 45 minuti (2700 secondi)
+tsp_path = solve_tsp_with_timeout(graph, timeout_sec=2700)
 
 tsp_cost = calcola_costo(graph, tsp_path)
 chiave_da_cercare = 'pla7397'
