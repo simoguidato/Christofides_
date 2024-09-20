@@ -1,24 +1,14 @@
+import concurrent.futures
 import time
-import signal
 import tsplib95
 import networkx as nx
 from networkx.algorithms import matching
 from itertools import combinations
 
-
 start_time = time.process_time()
-
-
-class TimeoutException(Exception): pass
-
-
-def timeout_handler(signum, frame):
-    raise TimeoutException()
-
 
 def load_tsp_problem(filename):
     return tsplib95.load(filename)
-
 
 def christofides_tsp(input_graph):
     # Step 1: Calcolo del Minimum Spanning Tree (MST)
@@ -27,22 +17,9 @@ def christofides_tsp(input_graph):
     # Step 2: Trovare i vertici con grado dispari nel MST
     odd_degree_nodes = [v for v, degree in mst.degree() if degree % 2 == 1]
 
-    # Step 3: Matching perfetto a costo minimo con timeout
+    # Step 3: Matching perfetto a costo minimo
     subgraph = input_graph.subgraph(odd_degree_nodes)
-
-    # Imposta il timeout a 120 secondi per il matching
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(120)
-
-    try:
-        # Matching perfetto con costo minimo
-        matching_edges = matching.min_weight_matching(subgraph, maxcardinality=True)
-    except TimeoutException:
-        print("Matching timeout - restituisco il matching parziale.")
-        # Matching alternativo (greedy) nel caso di timeout
-        matching_edges = nx.max_weight_matching(subgraph, maxcardinality=False)
-    finally:
-        signal.alarm(0)  # Disattiva l'allarme dopo il matching
+    matching_edges = matching.min_weight_matching(subgraph, maxcardinality=True)
 
     # Step 4: Creare un multigrafo aggiungendo gli spigoli del matching al MST
     multigraph = nx.MultiGraph(mst)
@@ -65,13 +42,11 @@ def christofides_tsp(input_graph):
 
     return tspath
 
-
 def calcola_costo(h_graph, path):
     costo = 0
     for i in range(len(path) - 1):
         costo += h_graph[path[i]][path[i + 1]]['weight']
     return costo
-
 
 def create_graph(tsp_problem):
     new_graph = nx.Graph()
@@ -80,6 +55,15 @@ def create_graph(tsp_problem):
         new_graph.add_edge(u, v, weight=problem.get_weight(u, v))
     return new_graph
 
+def solve_tsp_with_timeout(graph, timeout_sec):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(christofides_tsp, graph)
+        try:
+            tsp_path = future.result(timeout=timeout_sec)
+        except concurrent.futures.TimeoutError:
+            print(f"Timeout di {timeout_sec} secondi raggiunto. Restituisco un percorso parziale.")
+            tsp_path = []  # Restituisci un percorso vuoto o parziale se il timeout viene raggiunto
+    return tsp_path
 
 def parse_file(filename):
     risultati = {}
@@ -98,7 +82,6 @@ def parse_file(filename):
                         print(f"Valore non valido per la chiave '{key}': {value_str}")
     return risultati
 
-
 def is_euclidean_tsp(prob):
     nodes = list(prob.get_nodes())
     for i in range(len(nodes)):
@@ -113,7 +96,6 @@ def is_euclidean_tsp(prob):
                     print(f"La disuguaglianza triangolare è violata per i nodi {a}, {b}, {c}")
                     return False
     return True
-
 
 def cerca_valore(list, chiave):
     if chiave in list:
@@ -133,33 +115,23 @@ def cerca_valore(list, chiave):
     else:
         return f"La chiave '{chiave}' non è stata trovata."
 
-
 def report(file, tsp_value, approx, err, bool):
     with open(file, 'a') as file:
         file.write(
             f"{chiave_da_cercare}: Costo del percorso approssimato TSP: {tsp_value}, Rapporto di approssimazione: {approx}, Errore: {err}, Is Euclidean: {bool}\n")
 
-
 def time_rep(file, time):
     with open(file, 'a') as f:
         f.write(f"{chiave_da_cercare}: {time}\n")
-
 
 # Main
 tsp_file = 'TSP/pla7397.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
-# Imposta timeout globale di 20 minuti
-signal.alarm(1200)
-
-try:
-    tsp_path = christofides_tsp(graph)
-except TimeoutException:
-    print("Timeout globale - restituisco il percorso parziale.")
-    tsp_path = []
-finally:
-    signal.alarm(0)
+# Imposta timeout globale di 20 minuti (1200 secondi)
+timeout_sec = 1200
+tsp_path = solve_tsp_with_timeout(graph, timeout_sec)
 
 tsp_cost = calcola_costo(graph, tsp_path)
 chiave_da_cercare = 'pla7397'
@@ -173,5 +145,5 @@ risultato = cerca_valore(dizionario, chiave_da_cercare)
 print(risultato)
 temp = time.process_time() - start_time
 time_rep("Time", temp)
-print(f"Tempo totale: {temp}") 
+print(f"Tempo totale: {temp}")
 
