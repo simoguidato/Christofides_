@@ -109,7 +109,7 @@ def cerca_valore(list, chiave):
             else:
                 print(f"Il problema TSP rispetta il rapporto di approssimazione, {tsp_cost / list[chiave]}.")
         error = (tsp_cost - list[chiave]) / tsp_cost
-        report('/home/simo/PycharmProjects/Christofides/Report', tsp_cost, tsp_cost / list[chiave], error,
+        report('Report', tsp_cost, tsp_cost / list[chiave], error,
                is_euclidean_tsp(problem))
         print(f"Errore: {error}")
     else:
