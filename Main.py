@@ -129,8 +129,8 @@ tsp_file = 'TSP/fnl4461.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
-# Imposta timeout globale di 20 minuti (1200 secondi)
-timeout_sec = 1200
+
+timeout_sec = 2700
 tsp_path = solve_tsp_with_timeout(graph, timeout_sec)
 
 tsp_cost = calcola_costo(graph, tsp_path)
