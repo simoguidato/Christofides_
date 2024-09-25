@@ -5,7 +5,7 @@ on:
     branches:
       - master
 
-jobs: 
+jobs:
   tsp:
     runs-on: ubuntu-latest
 
@@ -23,7 +23,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run TSP solver
+    - name: Run TSP solver with profiling
       run: |
-        python Main.py
+        python -m cProfile -o profile.out Main.py
+
+    - name: Display profiling result
+      run: |
+        python -c "import pstats; p = pstats.Stats('profile.out'); p.sort_stats('time').print_stats(10)"
+
 
