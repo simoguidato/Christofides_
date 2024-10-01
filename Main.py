@@ -1,5 +1,7 @@
 import concurrent.futures
 import time
+import itertools
+from functools import lru_cache
 import tsplib95
 import networkx as nx
 from networkx.algorithms import matching
@@ -82,19 +84,23 @@ def parse_file(filename):
                         print(f"Valore non valido per la chiave '{key}': {value_str}")
     return risultati
 
-def is_euclidean_tsp(prob):
-    nodes = list(prob.get_nodes())
-    for i in range(len(nodes)):
-        for j in range(i + 1, len(nodes)):
-            for k in range(j + 1, len(nodes)):
-                a, b, c = nodes[i], nodes[j], nodes[k]
-                d_ab = problem.get_weight(a, b)
-                d_ac = problem.get_weight(a, c)
-                d_bc = problem.get_weight(b, c)
+@lru_cache(maxsize=None)
+def get_distance(problem, city1, city2):
+    return problem.get_weight(city1, city2)
 
-                if d_ab > d_ac + d_bc or d_ac > d_ab + d_bc or d_bc > d_ab + d_ac:
-                    print(f"La disuguaglianza triangolare è violata per i nodi {a}, {b}, {c}")
-                    return False
+def is_euclidean_tsp(problem):
+    nodes = list(problem.get_nodes())
+
+    # Verifichiamo la disuguaglianza triangolare per ogni combinazione di tre nodi
+    for a, b, c in itertools.combinations(nodes, 3):
+        d_ab = get_distance(problem, a, b)
+        d_ac = get_distance(problem, a, c)
+        d_bc = get_distance(problem, b, c)
+
+        # Verifica delle tre possibili versioni della disuguaglianza triangolare
+        if d_ab > d_ac + d_bc or d_ac > d_ab + d_bc or d_bc > d_ab + d_ac:
+            print(f"La disuguaglianza triangolare è violata per i nodi {a}, {b}, {c}")
+            return False
     return True
 
 def cerca_valore(list, chiave):
@@ -125,7 +131,7 @@ def time_rep(file, time):
         f.write(f"{chiave_da_cercare}: {time}\n")
 
 # Main
-tsp_file = 'TSP/att532.tsp'
+tsp_file = 'TSP/pla7397.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
@@ -134,7 +140,7 @@ timeout_sec = 2400
 tsp_path = solve_tsp_with_timeout(graph, timeout_sec)
 
 tsp_cost = calcola_costo(graph, tsp_path)
-chiave_da_cercare = 'att532'
+chiave_da_cercare = 'pla7397'
 print("Il percorso approssimato TSP è:")
 print(tsp_path)
 print(f"Il costo del percorso approssimato TSP è: {tsp_cost}")
