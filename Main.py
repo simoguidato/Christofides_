@@ -125,7 +125,7 @@ def time_rep(file, time):
         f.write(f"{chiave_da_cercare}: {time}\n")
 
 # Main
-tsp_file = 'TSP/rl11849.tsp'
+tsp_file = 'TSP/att532.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
@@ -134,7 +134,7 @@ timeout_sec = 2400
 tsp_path = solve_tsp_with_timeout(graph, timeout_sec)
 
 tsp_cost = calcola_costo(graph, tsp_path)
-chiave_da_cercare = 'rl11849'
+chiave_da_cercare = 'att532'
 print("Il percorso approssimato TSP è:")
 print(tsp_path)
 print(f"Il costo del percorso approssimato TSP è: {tsp_cost}")
