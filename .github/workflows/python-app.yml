@@ -23,12 +23,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run TSP solver with profiling
+    - name: Run TSP solver
       run: |
-        python -m cProfile -o profile.out Main.py
+        python Main.py
 
-    - name: Display profiling result
-      run: |
-        python -c "import pstats; p = pstats.Stats('profile.out'); p.sort_stats('time').print_stats(10)"
+ 
 
 
