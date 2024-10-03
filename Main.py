@@ -88,35 +88,19 @@ def parse_file(filename):
 def get_distance(problem, city1, city2):
     return problem.get_weight(city1, city2)
 
-def is_euclidean_tsp(problem):
-    nodes = list(problem.get_nodes())
 
-    # Verifichiamo la disuguaglianza triangolare per ogni combinazione di tre nodi
-    for a, b, c in itertools.combinations(nodes, 3):
-        d_ab = get_distance(problem, a, b)
-        d_ac = get_distance(problem, a, c)
-        d_bc = get_distance(problem, b, c)
-
-        # Verifica delle tre possibili versioni della disuguaglianza triangolare
-        if d_ab > d_ac + d_bc or d_ac > d_ab + d_bc or d_bc > d_ab + d_ac:
-            print(f"La disuguaglianza triangolare è violata per i nodi {a}, {b}, {c}")
-            return False
-    return True
 
 def cerca_valore(list, chiave):
     if chiave in list:
         print(f"Il valore corrispondente a '{chiave}' è: {list[chiave]}")
-        if is_euclidean_tsp(problem):
-            print("è euclideo")
-        else:
-            print("non è euclideo")
+        
             if tsp_cost / list[chiave] > 3 / 2:
                 print(f"non lo rispetta '{tsp_cost / list[chiave]}'.")
             else:
                 print(f"Il problema TSP rispetta il rapporto di approssimazione, {tsp_cost / list[chiave]}.")
         error = (tsp_cost - list[chiave]) / tsp_cost
         report('Report', tsp_cost, tsp_cost / list[chiave], error,
-               is_euclidean_tsp(problem))
+               false)
         print(f"Errore: {error}")
     else:
         return f"La chiave '{chiave}' non è stata trovata."
