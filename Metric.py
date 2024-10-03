@@ -13,7 +13,7 @@ def create_graph(tsp_problem):
     new_graph = nx.Graph()
     nodes = list(tsp_problem.get_nodes())
     for u, v in itertools.combinations(nodes, 2):
-        new_graph.add_edge(u, v, weight=problem.get_weight(u, v))
+        new_graph.add_edge(u, v, weight=tsp_problem.get_weight(u, v))
     return new_graph
 
 
@@ -44,3 +44,6 @@ def Main():
 tsp_file = 'TSP/pla7397.tsp'
 problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
+
+if __name__ == "__main__":
+    Main()
