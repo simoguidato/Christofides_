@@ -93,11 +93,10 @@ def get_distance(problem, city1, city2):
 def cerca_valore(list, chiave):
     if chiave in list:
         print(f"Il valore corrispondente a '{chiave}' è: {list[chiave]}")
-        
-            if tsp_cost / list[chiave] > 3 / 2:
+        if tsp_cost / list[chiave] > 3 / 2:
                 print(f"non lo rispetta '{tsp_cost / list[chiave]}'.")
-            else:
-                print(f"Il problema TSP rispetta il rapporto di approssimazione, {tsp_cost / list[chiave]}.")
+        else:
+            print(f"Il problema TSP rispetta il rapporto di approssimazione, {tsp_cost / list[chiave]}.")
         error = (tsp_cost - list[chiave]) / tsp_cost
         report('Report', tsp_cost, tsp_cost / list[chiave], error,
                false)
