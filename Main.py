@@ -119,7 +119,7 @@ problem = load_tsp_problem(tsp_file)
 graph = create_graph(problem)
 
 
-timeout_sec = 5000
+timeout_sec = 18000
 tsp_path = solve_tsp_with_timeout(graph, timeout_sec)
 
 tsp_cost = calcola_costo(graph, tsp_path)
